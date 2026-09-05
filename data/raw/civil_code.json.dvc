@@ -1,0 +1,5 @@
+outs:
+- md5: 6b7debbc5e076fddf1a9433ff241be0b
+  size: 1215713
+  hash: md5
+  path: civil_code.json
