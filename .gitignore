@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+env/
+build/
+dist/
+
+# Logs & Cache
+*.log
+.pytest_cache/
+.coverage
+
+# OS
+.DS_Store
+Thumbs.db
+# DVC
+.dvc/.gitignore
+.dvcignore
+.env
+
+# Data (raw files are tracked, but processed data can be ignored if large)
+data/processed/embeddings/
+data/raw/Law.pdf
