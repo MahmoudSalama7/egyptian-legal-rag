@@ -1,18 +1,30 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
 [project]
 name = "egyptian-legal-rag"
 version = "0.1.0"
-description = "Egyptian Legal RAG System"
+description = "Production-ready bilingual Legal RAG for the Egyptian Civil Code"
 readme = "README.md"
-requires-python = ">=3.11"
+requires-python = ">=3.10"
 dependencies = [
-    "pymupdf>=1.26.0",
-    "pytest>=8.0.0",
+    "fastapi>=0.110.0",
+    "uvicorn>=0.28.0",
+    "pydantic>=2.6.0",
+    "pydantic-settings>=2.2.0",
+    "dvc>=3.48.0",
+    "pypdf>=4.0.0",
 ]
 
-[tool.uv]
-package = false
-
-[dependency-groups]
+[project.optional-dependencies]
 dev = [
-    "dvc>=3.67.1",
+    "pytest>=8.0.0",
+    "pytest-cov>=4.1.0",
+    "httpx>=0.27.0",
+    "ruff>=0.3.0",
 ]
+
+[tool.pytest.ini_options]
+addopts = "-v --cov=src --cov-fail-under=70"
+testpaths = ["tests"]
