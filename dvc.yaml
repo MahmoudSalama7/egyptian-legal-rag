@@ -1,0 +1,15 @@
+stages:
+  ingest:
+    cmd: uv run python -m src.rag.ingestion --input data/raw/Law.pdf --output data/processed/civil_code.json
+    deps:
+      - data/raw/Law.pdf
+      - src/rag/ingestion.py
+    outs:
+      - data/processed/civil_code.json
+
+  clean:
+    cmd: uv run python -m src.rag.clean_dataset
+    deps:
+      - data/processed/civil_code.json
+    outs:
+      - data/processed/civil_code_ready.json

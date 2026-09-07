@@ -1,0 +1,31 @@
+schema: '2.0'
+stages:
+  ingest:
+    cmd: uv run python -m src.rag.ingestion --input data/raw/Law.pdf --output 
+      data/processed/civil_code.json
+    deps:
+    - path: data/raw/Law.pdf
+      hash: md5
+      md5: 5086ef5f16f15d856278db943e58e948
+      size: 2599703
+    - path: src/rag/ingestion.py
+      hash: md5
+      md5: 568b18110789e55708720126914d0b3c
+      size: 9749
+    outs:
+    - path: data/processed/civil_code.json
+      hash: md5
+      md5: 6b7debbc5e076fddf1a9433ff241be0b
+      size: 1215713
+  clean:
+    cmd: uv run python -m src.rag.clean_dataset
+    deps:
+    - path: data/processed/civil_code.json
+      hash: md5
+      md5: 6b7debbc5e076fddf1a9433ff241be0b
+      size: 1215713
+    outs:
+    - path: data/processed/civil_code_ready.json
+      hash: md5
+      md5: 2e6e7eb5760ba6c2f4979626ba9674fc
+      size: 1197588
