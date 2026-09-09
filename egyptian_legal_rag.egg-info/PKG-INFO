@@ -7,13 +7,19 @@ Description-Content-Type: text/markdown
 Requires-Dist: fastapi>=0.110.0
 Requires-Dist: uvicorn>=0.28.0
 Requires-Dist: pydantic>=2.6.0
+Requires-Dist: ragas>=0.1.0
+Requires-Dist: datasets>=2.16.0
 Requires-Dist: pydantic-settings>=2.2.0
 Requires-Dist: dvc>=3.48.0
 Requires-Dist: pypdf>=4.0.0
+Requires-Dist: pymupdf>=1.23.0
 Requires-Dist: mlflow>=2.10.0
 Requires-Dist: python-dotenv>=1.0.0
+Requires-Dist: sentence-transformers>=2.2.0
+Requires-Dist: numpy>=1.24.0
 Provides-Extra: dev
 Requires-Dist: pytest>=8.0.0; extra == "dev"
 Requires-Dist: pytest-cov>=4.1.0; extra == "dev"
 Requires-Dist: httpx>=0.27.0; extra == "dev"
 Requires-Dist: ruff>=0.3.0; extra == "dev"
+Requires-Dist: pre-commit>=3.5.0; extra == "dev"

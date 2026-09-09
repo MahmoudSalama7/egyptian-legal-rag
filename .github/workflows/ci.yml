@@ -1,0 +1,66 @@
+name: CI/CD Pipeline & Quality Gate
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  lint:
+    name: Lint & Code Style
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Install Linting Tools
+        run: |
+          pip install ruff
+
+      - name: Run Ruff Linter
+        run: ruff check src/ tests/
+
+  test-and-gate:
+    name: Tests & Model Quality Gate
+    needs: lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Install Package & Dependencies
+        run: |
+          pip install -e ".[dev]"
+
+      - name: Run Pytest with Coverage Gate (>=70%)
+        run: |
+          pytest --cov=src --cov-fail-under=70
+
+      - name: Run RAG Quality Gate
+        run: |
+          python -m src.rag.evaluate_gate
+
+  build-docker:
+    name: Build Docker Image
+    needs: test-and-gate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: actions/setup-buildx-action@v3
+
+      - name: Build Docker Container
+        run: |
+          docker build -f docker/Dockerfile -t egyptian-legal-rag:test .

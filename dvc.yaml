@@ -13,3 +13,19 @@ stages:
       - data/processed/civil_code.json
     outs:
       - data/processed/civil_code_ready.json
+
+  chunk:
+    cmd: uv run python -m src.rag.chunking
+    deps:
+      - data/processed/civil_code_ready.json
+    outs:
+      - data/processed/civil_code_chunks.json
+
+  index:
+    cmd: uv run python -c "from src.rag.retrieval import LegalRetriever; LegalRetriever()"
+    deps:
+      - data/processed/civil_code_chunks.json
+      - src/rag/embeddings.py
+      - src/rag/retrieval.py
+    outs:
+      - data/processed/index_store/vectors.npy

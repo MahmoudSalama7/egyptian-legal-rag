@@ -1,14 +1,16 @@
 from fastapi.testclient import TestClient
+
 from src.api.main import app
 
 client = TestClient(app)
 
 
 def test_health_endpoint():
-    response = client.get("/health")
-    assert response.status_code == 200
-    assert "status" in response.json()
-    assert "documents_indexed" in response.json()
+    with TestClient(app) as test_client:
+        response = test_client.get("/health")
+        assert response.status_code == 200
+        assert "status" in response.json()
+        assert "documents_indexed" in response.json()
 
 
 def test_ask_validation_empty_query():

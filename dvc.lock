@@ -1,7 +1,7 @@
 schema: '2.0'
 stages:
   ingest:
-    cmd: uv run python -m src.rag.ingestion --input data/raw/Law.pdf --output 
+    cmd: uv run python -m src.rag.ingestion --input data/raw/Law.pdf --output
       data/processed/civil_code.json
     deps:
     - path: data/raw/Law.pdf
@@ -10,8 +10,8 @@ stages:
       size: 2599703
     - path: src/rag/ingestion.py
       hash: md5
-      md5: 568b18110789e55708720126914d0b3c
-      size: 9749
+      md5: 245300badc781cf8b211c1eeeb566e6f
+      size: 10172
     outs:
     - path: data/processed/civil_code.json
       hash: md5
@@ -29,3 +29,36 @@ stages:
       hash: md5
       md5: 2e6e7eb5760ba6c2f4979626ba9674fc
       size: 1197588
+  chunk:
+    cmd: uv run python -m src.rag.chunking
+    deps:
+    - path: data/processed/civil_code_ready.json
+      hash: md5
+      md5: 2e6e7eb5760ba6c2f4979626ba9674fc
+      size: 1197588
+    outs:
+    - path: data/processed/civil_code_chunks.json
+      hash: md5
+      md5: 37112006e837259c037d31b69e8a4643
+      size: 1636719
+  index:
+    cmd: uv run python -c "from src.rag.retrieval import LegalRetriever;
+      LegalRetriever()"
+    deps:
+    - path: data/processed/civil_code_chunks.json
+      hash: md5
+      md5: 37112006e837259c037d31b69e8a4643
+      size: 1636719
+    - path: src/rag/embeddings.py
+      hash: md5
+      md5: 7b50e6586e1ab1b53d6d6eef1cddfe51
+      size: 1307
+    - path: src/rag/retrieval.py
+      hash: md5
+      md5: 1ba7814182548c97f3e9213ab854a4d1
+      size: 2474
+    outs:
+    - path: data/processed/index_store/vectors.npy
+      hash: md5
+      md5: eda374543afaf027f05a661ce429c5db
+      size: 3526784

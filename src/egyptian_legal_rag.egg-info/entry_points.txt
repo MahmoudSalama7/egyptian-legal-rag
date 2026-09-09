@@ -1,0 +1,2 @@
+[console_scripts]
+mlflow-ui = src.rag.server:main

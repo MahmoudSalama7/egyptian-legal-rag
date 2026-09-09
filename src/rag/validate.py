@@ -54,19 +54,27 @@ def validate_articles(input_path: str | Path) -> bool:
         # 4. Text validation
         if not is_repealed:
             if not isinstance(text_ar, str) or len(text_ar.strip()) < 5:
-                errors.append(f"{prefix} (Article {num}): Arabic text is empty or too short.")
+                errors.append(
+                    f"{prefix} (Article {num}): Arabic text is empty or too short."
+                )
             if not isinstance(text_en, str) or len(text_en.strip()) < 5:
-                errors.append(f"{prefix} (Article {num}): English text is empty or too short.")
+                errors.append(
+                    f"{prefix} (Article {num}): English text is empty or too short."
+                )
 
             # Sanity: Arabic text must contain Arabic characters
-            ar_chars = sum("\u0600" <= c <= "\u06FF" for c in text_ar)
+            ar_chars = sum("\u0600" <= c <= "\u06ff" for c in text_ar)
             if ar_chars < 5:
-                errors.append(f"{prefix} (Article {num}): text_ar lacks Arabic characters.")
+                errors.append(
+                    f"{prefix} (Article {num}): text_ar lacks Arabic characters."
+                )
 
             # Sanity: English text must contain Latin characters
             en_chars = sum("a" <= c.lower() <= "z" for c in text_en)
             if en_chars < 5:
-                errors.append(f"{prefix} (Article {num}): text_en lacks English characters.")
+                errors.append(
+                    f"{prefix} (Article {num}): text_en lacks English characters."
+                )
 
     # Check duplicates
     duplicates = [n for n in set(seen_numbers) if seen_numbers.count(n) > 1]

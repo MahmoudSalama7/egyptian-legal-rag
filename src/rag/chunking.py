@@ -30,7 +30,9 @@ def create_legal_chunks(
             "metadata": {
                 "article_number": art_no,
                 "is_repealed": is_repealed,
-                "citation": art.get("citation", f"Egyptian Civil Code, Article {art_no}"),
+                "citation": art.get(
+                    "citation", f"Egyptian Civil Code, Article {art_no}"
+                ),
                 "source_page": art.get("source_page"),
                 "has_translation": bool(text_en),
             },
@@ -47,7 +49,9 @@ def create_legal_chunks(
                 "metadata": {
                     "article_number": art_no,
                     "is_repealed": is_repealed,
-                    "citation": art.get("citation", f"Egyptian Civil Code, Article {art_no}"),
+                    "citation": art.get(
+                        "citation", f"Egyptian Civil Code, Article {art_no}"
+                    ),
                     "source_page": art.get("source_page"),
                     "has_translation": True,
                 },

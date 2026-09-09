@@ -12,6 +12,10 @@ dist/
 .pytest_cache/
 .coverage
 
+#mlflow
+mlflow.db
+mlruns/
+
 # OS
 .DS_Store
 Thumbs.db
