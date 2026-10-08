@@ -4,12 +4,13 @@ import json
 import subprocess
 import time
 from pathlib import Path
+
 import mlflow
 
-from src.rag.retrieval import LegalRetriever
-from src.rag.reranking import LegalReranker
-from src.rag.guardrails import LegalGuardrails
 from src.rag.generation import LegalGenerator
+from src.rag.guardrails import LegalGuardrails
+from src.rag.reranking import LegalReranker
+from src.rag.retrieval import LegalRetriever
 
 EVAL_GROUND_TRUTH = [
     {"question": "ما هو مبدأ العقد شريعة المتعاقدين؟", "expected_article": 147},

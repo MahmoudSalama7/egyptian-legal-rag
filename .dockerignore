@@ -1,0 +1,48 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+env/
+build/
+dist/
+*.egg-info/
+
+# Git
+.git/
+.gitignore
+.github/
+
+# DVC
+.dvc/
+.dvcignore
+
+# Tests & CI
+tests/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Environment
+.env
+.env.example
+
+# Misc
+*.md
+*.pdf
+mlflow.db
+mlruns/
+benchmarks/
+reports/
+serving/
+.ruff_cache/
+.pre-commit-config.yaml
+.gemini/

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from typing import Any
+
 from sentence_transformers import CrossEncoder
 
 DEFAULT_RERANK_MODEL = "cross-encoder/mmarco-mMiniLMv2-L12-H384-v1"
