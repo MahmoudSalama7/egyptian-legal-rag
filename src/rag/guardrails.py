@@ -1,12 +1,12 @@
 from __future__ import annotations
 
 import re
-from typing import Tuple
+from typing import ClassVar
 
 
 class LegalGuardrails:
     # الكلمات المفتاحية الدالة على محاولات حقن التوجيهات
-    INJECTION_PATTERNS = [
+    INJECTION_PATTERNS: ClassVar[list[str]] = [
         r"ignore\s+previous\s+instructions",
         r"تجاهل\s+التعليمات\s+السابقة",
         r"system\s*prompt",
@@ -16,8 +16,10 @@ class LegalGuardrails:
     ]
 
     # الكلمات التي تدل على أن السؤال قانوني
-    LEGAL_KEYWORDS = [
+    LEGAL_KEYWORDS: ClassVar[list[str]] = [
         "عقد",
+        "تعاقد",
+        "أهلية",
         "قانون",
         "مادة",
         "التزام",
@@ -41,7 +43,7 @@ class LegalGuardrails:
     ]
 
     @classmethod
-    def validate_input(cls, query: str) -> Tuple[bool, str]:
+    def validate_input(cls, query: str) -> tuple[bool, str]:
         """فحص السؤال قبل معالجته في محرك البحث."""
         clean_query = query.strip()
 
@@ -64,7 +66,7 @@ class LegalGuardrails:
         return any(kw in query_lower for kw in cls.LEGAL_KEYWORDS)
 
     @classmethod
-    def validate_output(cls, answer: str, sources: list[dict]) -> Tuple[bool, str]:
+    def validate_output(cls, answer: str, sources: list[dict]) -> tuple[bool, str]:
         """فحص الإجابة قبل إعادتها للعميل لضمان عدم وجود هلوسة أو خلوها من المصادر."""
         if not sources:
             return False, "تنبيه: لم يتم العثور على مواد قانونية تسند هذه الإجابة."
