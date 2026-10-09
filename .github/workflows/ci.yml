@@ -43,6 +43,22 @@ jobs:
         run: |
           pip install -e ".[dev]"
 
+      - name: Ensure Processed Chunks Data
+        run: |
+          python -c "
+          import os, json
+          os.makedirs('data/processed', exist_ok=True)
+          chunks_file = 'data/processed/civil_code_chunks.json'
+          if not os.path.exists(chunks_file):
+              sample_chunks = [
+                  {'chunk_id': 'art_1_ar', 'article_number': 1, 'language': 'ar', 'text': 'المادة 1: تسري النصوص التشريعية على جميع المسائل.', 'metadata': {'article_number': 1, 'citation': 'المادة 1', 'is_repealed': False}},
+                  {'chunk_id': 'art_1_en', 'article_number': 1, 'language': 'en', 'text': 'Article 1: Provisions of laws govern all matters.', 'metadata': {'article_number': 1, 'citation': 'Article 1', 'is_repealed': False}},
+                  {'chunk_id': 'art_418_ar', 'article_number': 418, 'language': 'ar', 'text': 'المادة 418: البيع عقد يلتزم به البائع أن ينقل للمشتري ملكية شيء.', 'metadata': {'article_number': 418, 'citation': 'المادة 418', 'is_repealed': False}}
+              ]
+              with open(chunks_file, 'w', encoding='utf-8') as f:
+                  json.dump(sample_chunks, f, ensure_ascii=False, indent=2)
+          "
+
       - name: Run Pytest with Coverage Gate (>=70%)
         run: |
           pytest --cov=src --cov-fail-under=70
