@@ -51,8 +51,14 @@ jobs:
           chunks_file = 'data/processed/civil_code_chunks.json'
           if not os.path.exists(chunks_file):
               sample_chunks = [
-                  {'chunk_id': 'art_1_ar', 'article_number': 1, 'language': 'ar', 'text': 'المادة 1: تسري النصوص التشريعية على جميع المسائل.', 'metadata': {'article_number': 1, 'citation': 'المادة 1', 'is_repealed': False}},
+                  {'chunk_id': 'art_1_ar', 'article_number': 1, 'language': 'ar', 'text': 'المادة 1: تسري النصوص التشريعية على جميع المسائل في لفظها أو فحواها.', 'metadata': {'article_number': 1, 'citation': 'المادة 1', 'is_repealed': False}},
                   {'chunk_id': 'art_1_en', 'article_number': 1, 'language': 'en', 'text': 'Article 1: Provisions of laws govern all matters.', 'metadata': {'article_number': 1, 'citation': 'Article 1', 'is_repealed': False}},
+                  {'chunk_id': 'art_5_ar', 'article_number': 5, 'language': 'ar', 'text': 'المادة 5: يكون استعمال الحق غير مشروع في شروط التعسف في استعمال الحق وإذا لم يقصد به سوى اإلضرار بالغير.', 'metadata': {'article_number': 5, 'citation': 'المادة 5', 'is_repealed': False}},
+                  {'chunk_id': 'art_30_ar', 'article_number': 30, 'language': 'ar', 'text': 'المادة 30: تثبت الولادة والوفاة والسجالت رسمياً بالسجالت الرسمية.', 'metadata': {'article_number': 30, 'citation': 'المادة 30', 'is_repealed': False}},
+                  {'chunk_id': 'art_44_ar', 'article_number': 44, 'language': 'ar', 'text': 'المادة 44: سن الرشد في القانون المدني المصري إحدى وعشرون سنة ميلادية كاملة.', 'metadata': {'article_number': 44, 'citation': 'المادة 44', 'is_repealed': False}},
+                  {'chunk_id': 'art_45_ar', 'article_number': 45, 'language': 'ar', 'text': 'المادة 45: تبطل التصرفات الصادرة من عديم التمييز مجنون أو معتوه أو صغير.', 'metadata': {'article_number': 45, 'citation': 'المادة 45', 'is_repealed': False}},
+                  {'chunk_id': 'art_145_ar', 'article_number': 145, 'language': 'ar', 'text': 'المادة 145: ينصرف أثر العقد إلى المتعاقدين والخلف العام دون إخلال بالقواعد المتعلقة بالتَرِكَة.', 'metadata': {'article_number': 145, 'citation': 'المادة 145', 'is_repealed': False}},
+                  {'chunk_id': 'art_147_ar', 'article_number': 147, 'language': 'ar', 'text': 'المادة 147: العقد شريعة المتعاقدين، فلا يجوز نقضه ولا تعديله إلا باتفاق الطرفين أو للأسباب التي يقررها القانون هو مصدر الالتزام والعقد.', 'metadata': {'article_number': 147, 'citation': 'المادة 147', 'is_repealed': False}},
                   {'chunk_id': 'art_418_ar', 'article_number': 418, 'language': 'ar', 'text': 'المادة 418: البيع عقد يلتزم به البائع أن ينقل للمشتري ملكية شيء.', 'metadata': {'article_number': 418, 'citation': 'المادة 418', 'is_repealed': False}}
               ]
               with open(chunks_file, 'w', encoding='utf-8') as f:
