@@ -109,6 +109,7 @@ def run_ragas_evaluation(
     experiment_name: str = "module_4_ragas_evaluation",
 ) -> pd.DataFrame:
     """Run full evaluation pipeline over the golden dataset and log metrics to MLflow."""
+    mlflow.set_tracking_uri("sqlite:///mlflow.db")
     logger.info("Initializing RAG pipeline components for evaluation...")
     retriever = LegalRetriever()
     reranker = LegalReranker()
