@@ -17,6 +17,7 @@ Requires-Dist: mlflow>=2.10.0
 Requires-Dist: python-dotenv>=1.0.0
 Requires-Dist: sentence-transformers>=2.2.0
 Requires-Dist: numpy>=1.24.0
+Requires-Dist: langfuse>=2.0.0
 Provides-Extra: dev
 Requires-Dist: pytest>=8.0.0; extra == "dev"
 Requires-Dist: pytest-cov>=4.1.0; extra == "dev"
@@ -28,32 +29,133 @@ Requires-Dist: locust>=2.20.0; extra == "dev"
 
 # ⚖️ Egyptian Legal RAG (محرك الاسترجاع والتوليد المعزز للقانون المدني المصري)
 
+[![CI/CD Pipeline](https://github.com/MahmoudSalama7/egyptian-legal-rag/actions/workflows/ci.yml/badge.svg)](https://github.com/MahmoudSalama7/egyptian-legal-rag/actions/workflows/ci.yml)
 [![Python Version](https://img.shields.io/badge/python-3.10%2B-blue.svg)](https://www.python.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.110%2B-009688.svg)](https://fastapi.tiangolo.com/)
 [![DVC](https://img.shields.io/badge/DVC-Data%20Version%20Control-9cf.svg)](https://dvc.org/)
 [![MLflow](https://img.shields.io/badge/MLflow-Experiment%20Tracking-0194E2.svg)](https://mlflow.org/)
+[![Prometheus](https://img.shields.io/badge/Prometheus-Monitoring-E6522C.svg)](https://prometheus.io/)
+[![Grafana](https://img.shields.io/badge/Grafana-Observability-F46800.svg)](https://grafana.com/)
 [![Code Style: Ruff](https://img.shields.io/badge/code%20style-ruff-000000.svg)](https://github.com/astral-sh/ruff)
 
-A **production-ready, bilingual (Arabic & English)** Retrieval-Augmented Generation (RAG) system specifically designed for the **Egyptian Civil Code (القانون المدني المصري)**.
-
-This system provides precise legal document retrieval, cross-encoder re-ranking, citation-grounded generation, input/output security guardrails, and enterprise tracking via MLflow & DVC.
+A **production-ready, bilingual (Arabic & English)** Retrieval-Augmented Generation (RAG) system specifically engineered for the **Egyptian Civil Code (القانون المدني المصري)**. This system delivers precise legal article retrieval, cross-encoder re-ranking, real-time SSE token streaming, input/output security guardrails, automated RAGAS quality evaluation, Prometheus/Grafana observability, and enterprise ML lifecycle management via DVC and MLflow.
 
 ---
 
-## 🌟 Key Features
+## ⚡ 3-Command Quickstart
 
-* **📜 Legal Data Ingestion & Normalization**: Automated PDF ingestion (`PyMuPDF`/`pypdf`), text normalization, and article-aware chunking preserving legal article numbers (`المادة`).
-* **🔍 Dense Multilingual Vector Retrieval**: Sentence-transformer based retrieval tailored for legal domain Arabic & English queries (`paraphrase-multilingual-MiniLM-L12-v2`).
-* **🎯 Cross-Encoder Reranking**: Re-ranking stage using multilingual Cross-Encoder (`cross-encoder/mmarco-mMiniLMv2-L12-H384-v1`) to maximize relevance and minimize precision loss.
-* **🛡️ Security & Anti-Hallucination Guardrails**:
-  * **Input Validation**: Prompt injection detection and domain scope checking.
-  * **Output Validation**: Strict citation verification ensuring response grounding.
-* **⚖️ Citation-Grounded Legal Generator**: Formulates formal legal answers linked directly to Egyptian Civil Code articles.
-* **🚀 Production REST API**: FastAPI backend with async lifecycle management, `/ask` and `/health` endpoints.
-* **📊 MLOps & Experimentation**:
-  * **DVC Pipeline**: Reproducible ingestion, cleaning, chunking, and indexing.
-  * **MLflow Tracking**: Experiment logging for chunking strategies, embeddings, and retrieval metrics.
-* **🧪 Comprehensive Testing**: Full test coverage suite using `pytest` and code linting via `ruff`.
+Run the complete production pipeline from scratch in three terminal commands:
+
+```bash
+# 1. Clone repository & install dependencies
+git clone https://github.com/MahmoudSalama7/egyptian-legal-rag.git && cd egyptian-legal-rag && uv sync --extra dev
+
+# 2. Run reproducible DVC data pipeline & pytest quality suite (>=70% coverage gate)
+uv run dvc repro && uv run pytest
+
+# 3. Launch full production stack (API + Prometheus + Grafana + MLflow UI) via Docker Compose
+docker compose up --build -d
+```
+
+---
+
+## 🌟 Key System Capabilities
+
+* **📜 Legal Data Ingestion & Normalization**: Automated PDF parsing (`PyMuPDF`/`pypdf`), Arabic text normalization, and article-preserving chunking.
+* **🔍 Multilingual Vector Retrieval**: Dense embedding search tailored for Arabic/English legal queries (`paraphrase-multilingual-MiniLM-L12-v2`).
+* **🎯 Cross-Encoder Reranking**: Re-ranking stage using multilingual Cross-Encoder (`cross-encoder/mmarco-mMiniLMv2-L12-H384-v1`) maximizing precision.
+* **⚡ Real-Time SSE Token Streaming**: Server-Sent Events endpoint (`/ask/stream`) delivering real-time answer token chunks and source articles.
+* **⚙️ Adaptive Micro-Batching**: Asynchronous request batching (`MicroBatcher`) optimizing embedding & reranking GPU/CPU throughput.
+* **🛡️ Security Guardrails**: Prompt injection detection, out-of-domain (OOD) query rejection, and citation grounding checks.
+* **📊 Official RAGAS Quality Evaluation**: 20-question golden dataset evaluation (`civil_code_eval_20.json`) measuring Faithfulness, Relevance, Context Recall, and Context Precision logged to MLflow.
+* **📈 Prometheus & Grafana Observability**: Live metrics exporter (`/metrics`) exposing P95/P99 latencies, guardrail rejections, and context recall gauge in pre-provisioned Grafana dashboards.
+
+---
+
+## 🌐 Production Ecosystem Services
+
+| Service | Endpoint / URL | Purpose | Credentials |
+|---------|---------------|---------|-------------|
+| **FastAPI Serving API** | `http://localhost:8000` | Sync Q&A, SSE Streaming, Health, Metrics | N/A |
+| **Interactive API Docs** | `http://localhost:8000/docs` | Swagger UI for testing endpoints | N/A |
+| **Prometheus Server** | `http://localhost:9090` | Time-series metrics scraping engine | N/A |
+| **Grafana Dashboards** | `http://localhost:3000` | Live visual observability dashboards | `admin` / `admin` |
+| **MLflow Tracking UI** | `http://localhost:5000` | Experiment tracking & model registry | N/A |
+
+---
+
+## 📡 API Reference & Example `curl` Commands
+
+### 1. Health Probe (`GET /health`)
+
+```bash
+curl -X GET "http://localhost:8000/health"
+```
+
+**Response:**
+```json
+{
+  "status": "healthy",
+  "documents_indexed": 2296,
+  "version": "1.0.0",
+  "uptime_seconds": 124.5
+}
+```
+
+### 2. Synchronous Legal Q&A (`POST /ask`)
+
+```bash
+curl -X POST "http://localhost:8000/ask" \
+     -H "Content-Type: application/json" \
+     -d '{"question": "ما هي أحكام فسخ العقد في القانون المدني المصري؟", "top_k": 3}'
+```
+
+**Response:**
+```json
+{
+  "question": "ما هي أحكام فسخ العقد في القانون المدني المصري؟",
+  "answer": "استناداً إلى نصوص القانون المدني المصري الواردة في (المادة 157، المادة 158)، فإن أحكام المسألة تتحدد بالضوابط المقررة في نصوص المواد المرفقة طيه.",
+  "sources": [
+    {
+      "article_number": 157,
+      "citation": "المادة 157",
+      "text_snippet": "في العقود الملزمة للجانبين، إذا لم يف أحد المتعاقدين بالتزامه جاز للمتعاقد الآخر...",
+      "score": 0.8942
+    }
+  ],
+  "model_version": "1.0.0",
+  "latency_ms": 142.18
+}
+```
+
+### 3. SSE Real-Time Streaming (`POST /ask/stream`)
+
+```bash
+curl -N -X POST "http://localhost:8000/ask/stream" \
+     -H "Content-Type: application/json" \
+     -d '{"question": "ما هي شروط صحة عقد البيع؟", "top_k": 3}'
+```
+
+**Streamed Response Frames:**
+```
+event: sources
+data: [{"article_number": 418, "citation": "المادة 418", ...}]
+
+event: chunk
+data: استناداً إلى نصوص القانون المدني المصري
+
+event: chunk
+data: الواردة في (المادة 418)...
+
+event: done
+data: {"latency_ms": 156.42}
+```
+
+### 4. Prometheus Metrics Exporter (`GET /metrics`)
+
+```bash
+curl -X GET "http://localhost:8000/metrics"
+```
 
 ---
 
@@ -61,166 +163,60 @@ This system provides precise legal document retrieval, cross-encoder re-ranking,
 
 ```
 egyptian-legal-rag/
+├── benchmarks/               # Load & stress testing (Locust + Latency profiler)
+│   ├── locustfile.py         # Concurrent user traffic benchmark
+│   └── profiler.py           # Latency percentile profiler (P50, P95, P99)
 ├── data/
+│   ├── evaluation/           # 20-question Golden Dataset (civil_code_eval_20.json)
 │   ├── raw/                  # Raw Legal PDF documents (Law.pdf)
-│   └── processed/            # Structured JSON data & vector embeddings index
-├── docker/                   # Deployment & container configurations
-├── serving/                  # Serving orchestration (BentoML, Nginx, vLLM)
-├── reports/                  # Pipeline validation & evaluation reports
+│   └── processed/            # Structured JSON data & vector embeddings store
+├── docker/                   # Container & Observability configurations
+│   ├── Dockerfile            # Multi-stage production build using uv
+│   ├── prometheus.yml        # Prometheus scrape target configuration
+│   └── grafana/              # Pre-provisioned Grafana datasource & dashboard JSON
+├── reports/                  # Engineering & Evaluation reports (Modules 1–5)
+│   ├── module-1.md           # Module 1: Packaging & Baseline report
+│   ├── module-2.md           # Module 2: Tracking & DVC report
+│   ├── module-3.md           # Module 3: High-Performance Serving report
+│   ├── module-4.md           # Module 4: Golden Dataset & Ragas Eval report
+│   └── module-5.md           # Module 5: Observability & Operational Playbook
 ├── src/
-│   ├── api/                  # FastAPI Application
-│   │   ├── main.py           # API endpoints & app lifespan
-│   │   └── schemas.py        # Request & Response Pydantic models
-│   └── rag/                  # Core RAG Engine
+│   ├── api/                  # FastAPI Application Layer
+│   │   ├── batching.py       # Adaptive micro-batching engine
+│   │   ├── main.py           # Production REST server & SSE streaming
+│   │   └── schemas.py        # Request/Response Pydantic schemas
+│   └── rag/                  # Core RAG Architecture
 │       ├── chunking.py       # Legal article chunking logic
-│       ├── clean_dataset.py  # Arabic text normalization & cleanup
-│       ├── config.py         # System configuration & environment vars
-│       ├── embeddings.py     # SentenceTransformers embedding service
-│       ├── evaluation.py     # Ragas evaluation integration
-│       ├── experiments.py    # MLflow experiment tracking runner
-│       ├── generation.py     # Legal prompt synthesis & LLM generator
-│       ├── guardrails.py     # Security guardrails & domain filters
+│       ├── clean_dataset.py  # Arabic text normalization
+│       ├── embeddings.py     # Multilingual embedding service
+│       ├── guardrails.py     # Input/Output security & OOD guardrails
 │       ├── ingestion.py      # PDF parsing & text extraction
-│       ├── registry.py       # Model & artifact registry helpers
+│       ├── ragas_eval.py     # Official Ragas evaluation pipeline
+│       ├── registry.py       # MLflow Model Registry helpers
 │       ├── reranking.py      # Cross-encoder re-ranking module
-│       ├── retrieval.py      # Dense retriever & vector search
-│       ├── server.py         # MLflow UI runner script
-│       └── validate.py       # Schema & data pipeline validators
-├── tests/                    # Unit and integration test suite
-├── dvc.yaml                  # DVC data pipeline stages
-├── pyproject.toml            # Dependencies and project metadata
-└── .env.example              # Environment variable configuration template
-```
-
----
-
-## ⚙️ Quick Start & Installation
-
-### Prerequisites
-
-* Python `>= 3.10`
-* [`uv`](https://github.com/astral-sh/uv) (recommended) or standard `pip`
-
-### 1. Clone the Repository
-
-```bash
-git clone https://github.com/MahmoudSalama7/egyptian-legal-rag.git
-cd egyptian-legal-rag
-```
-
-### 2. Environment Setup
-
-Copy `.env.example` to `.env` and set any relevant API keys or server configuration:
-
-```bash
-cp .env.example .env
-```
-
-### 3. Install Dependencies
-
-Using **`uv`**:
-```bash
-uv sync --extra dev
-```
-
-Or using **`pip`**:
-```bash
-pip install -e ".[dev]"
-```
-
----
-
-## 🔄 Running the DVC Data Pipeline
-
-Run the end-to-end data ingestion, dataset cleaning, chunking, and vector indexing pipeline:
-
-```bash
-uv run dvc repro
-```
-
-This runs the following sequential pipeline stages:
-1. `ingest`: Extracts raw legal text from `data/raw/Law.pdf`.
-2. `clean`: Normalizes Arabic text and strips noise into `data/processed/civil_code_ready.json`.
-3. `chunk`: Splits text into legal article units in `data/processed/civil_code_chunks.json`.
-4. `index`: Generates vector embeddings stored in `data/processed/index_store/vectors.npy`.
-
----
-
-## 🚀 Running the API & MLflow UI
-
-### Start the FastAPI REST Server
-
-```bash
-uv run uvicorn src.api.main:app --host 0.0.0.0 --port 8000 --reload
-```
-
-Interactive API documentation will be available at:
-* Swagger UI: `http://localhost:8000/docs`
-* Redoc: `http://localhost:8000/redoc`
-
-### Start MLflow Experiment UI
-
-```bash
-uv run python -m src.rag.server
-```
-Access the tracking dashboard at `http://localhost:5000`.
-
----
-
-## 📡 API Reference
-
-### Health Check (`GET /health`)
-
-**Response:**
-```json
-{
-  "status": "healthy",
-  "documents_indexed": 1050,
-  "version": "0.1.0"
-}
-```
-
-### Ask Legal Question (`POST /ask`)
-
-**Request Payload:**
-```json
-{
-  "question": "ما هي أحكام فسخ العقد في القانون المدني المصري؟",
-  "top_k": 3
-}
-```
-
-**Response Payload:**
-```json
-{
-  "question": "ما هي أحكام فسخ العقد في القانون المدني المصري؟",
-  "answer": "استناداً إلى نصوص القانون المدني المصري الواردة في (المادة 157، المادة 158)...",
-  "sources": [
-    {
-      "article_number": "157",
-      "citation": "المادة 157",
-      "text_snippet": "في العقود الملزمة للجانبين، إذا لم يف أحد المتعاقدين بالتزامه جاز للمتعاقد الآخر...",
-      "score": 0.8942
-    }
-  ],
-  "model_version": "0.1.0"
-}
+│       └── retrieval.py      # Dense vector retriever
+├── tests/                    # Unit and integration test suite (pytest)
+├── docker-compose.yml        # Full ecosystem orchestration (API, Prometheus, Grafana, MLflow)
+├── dvc.yaml                  # DVC data pipeline specification
+├── pyproject.toml            # Project metadata & dependency definitions
+└── README.md                 # Project documentation & quickstart
 ```
 
 ---
 
 ## 🧪 Testing & Quality Assurance
 
-Run the test suite with coverage reporting:
+Run the test suite with coverage reporting (enforcing `>= 70%` coverage gate):
 
 ```bash
 uv run pytest
 ```
 
-Run linting checks with **Ruff**:
+Run Ruff linter and formatter:
 
 ```bash
 uv run ruff check .
+uv run ruff format .
 ```
 
 ---

@@ -129,12 +129,24 @@ class LegalGenerator:
         # 4. Log trace to Langfuse Cloud if enabled
         if self.langfuse:
             try:
-                self.langfuse.trace(
-                    name="legal_rag_generation",
-                    input={"question": query, "chunks_count": len(context_chunks)},
-                    output={"answer": answer},
-                    metadata={"model": self.model_name},
-                )
+                if hasattr(self.langfuse, "start_observation"):
+                    obs = self.langfuse.start_observation(
+                        name="legal_rag_generation",
+                        as_type="generation",
+                        input={"question": query, "chunks_count": len(context_chunks)},
+                        output={"answer": answer},
+                        model=self.model_name,
+                        metadata={"model": self.model_name},
+                    )
+                    obs.end()
+                    self.langfuse.flush()
+                elif hasattr(self.langfuse, "trace"):
+                    self.langfuse.trace(
+                        name="legal_rag_generation",
+                        input={"question": query, "chunks_count": len(context_chunks)},
+                        output={"answer": answer},
+                        metadata={"model": self.model_name},
+                    )
             except Exception as exc:  # noqa: BLE001
                 logger.warning("Langfuse trace logging skipped: %s", exc)
 
