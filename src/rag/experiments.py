@@ -28,7 +28,7 @@ def get_git_commit() -> str:
             .decode("ascii")
             .strip()
         )
-    except Exception:
+    except (subprocess.SubprocessError, OSError):
         return "unknown"
 
 

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import mlflow
 import mlflow.pyfunc
+from mlflow.exceptions import MlflowException
 from mlflow.tracking import MlflowClient
 
 MODEL_REGISTRY_NAME = "EgyptianCivilCodeRAG"
@@ -82,8 +83,8 @@ def register_best_model_to_production():
             archive_existing_versions=True,
         )
         print(f"Promoted {MODEL_REGISTRY_NAME} v{target_version} to Stage: Production")
-    except Exception:
-        pass
+    except (MlflowException, Exception) as exc:  # noqa: BLE001
+        print(f"[NOTE] Legacy stage transition skipped: {exc}")
 
     client.set_registered_model_alias(
         name=MODEL_REGISTRY_NAME,
